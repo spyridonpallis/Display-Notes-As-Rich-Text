@@ -1,0 +1,88 @@
+<apex:page controller="ContentNotesExtension" showHeader="false" lightningStylesheets="true">
+    <apex:slds />
+    <apex:stylesheet value="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" />
+
+    <style>
+        /* Add any custom styles here */
+
+        /* Make columns dynamic */
+        .slds-wrap .slds-size_1-of-1 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        
+        .truncate-text {
+            max-width: 100%; /* Adjust as needed */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* Number of lines you want */
+            -webkit-box-orient: vertical;
+            line-height: 1.2em; /* Adjust your line-height */
+        }
+        
+        /* Set overflow property to prevent horizontal scrolling */
+        .dataTableContainer {
+            overflow-x: hidden;
+        }
+        
+        .note-container {
+            border-bottom: 1px solid #ccc; /* Add a light gray line between notes */
+            padding-bottom: 10px; /* Add some space between notes */
+            padding-top: 10px;
+        }
+
+        .notes-header {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <apex:variable var="hasNotes" value="{!NOT(ISBLANK(notes)) && notes.size > 0}" />
+
+    <div class="notes-header">
+        Notes ({!IF(hasNotes, notes.size, 0)})
+    </div>
+
+    <apex:outputPanel rendered="{!hasNotes}">
+        <apex:repeat value="{!notes}" var="note">
+           <div class="note-container">
+        <div class="note-subject">
+            <apex:outputLink value="/{!note.noteId}" styleClass="smaller-subject truncate-text">
+                {!note.title}
+            </apex:outputLink>
+        </div>
+
+        <div class="note-metadata">
+            <div class="created-date">
+                <apex:outputText value="{0,date,MM'/'dd'/'yyyy h:mm a}">
+                    <apex:param value="{!note.createdDate}" />
+                </apex:outputText>
+            </div>
+            <div class="created-by">
+                        Created by:&nbsp;<apex:outputLink value="/{!note.createdBy.Id}" styleClass="slds-truncate truncate-text">
+                            <apex:outputText value="{!note.createdBy.Name}" />
+                        </apex:outputLink>
+           </div>
+        </div>
+
+        <div class="note-content custom-tooltip truncate-text" title="{!note.content}">
+            <apex:outputText value="{!note.content}" escape="false"/>
+        </div>
+    </div>
+        </apex:repeat>
+    </apex:outputPanel>
+
+    <apex:outputPanel rendered="{!!hasNotes}">
+        <div class="no-notes-message">
+            There are no Notes related to this Account record.
+        </div>
+    </apex:outputPanel>
+
+</apex:page>
